@@ -1,0 +1,6 @@
+---
+applications:
+- name: chatbot-sizzlers
+  memory: 512M
+  path: target/chatbot-1.0-SNAPSHOT.jar
+  host : chatbot-sizzlers

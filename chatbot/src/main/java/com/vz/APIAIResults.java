@@ -1,7 +1,14 @@
 package com.vz;
 
-public class chatInformation {
-
+public class APIAIResults {
+		/*source":"agent","
+		"resolvedQuery":"iOS installation",
+		"speech":"",""
+				+ "action":"vzinstallation.install",""
+						+ "actionIncomplete":false,
+						"parameters":{},
+						"contexts":[],
+						"metadata":{"intentId":"0e289ee5-5006-4624-9a36-1aa0e7126eaa","webhookUsed":"true","webhookForSlotFillingUsed":"false","intentName":"VzInstallation"},"fulfillment":{"speech":"installation","messages":[{"type":0,"speech":"installation"}]},"score":0.9}****^^^^*/
 	String speech;
 	String displayText;
 	String data;

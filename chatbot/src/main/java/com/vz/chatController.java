@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,26 +33,29 @@ public class chatController {
 
 	chatInformation ochat = new chatInformation();
 	@RequestMapping(value="/{chatInput}",method=RequestMethod.POST,produces={MediaType.APPLICATION_JSON_VALUE})
-	public String getResponse(HttpServletRequest request) throws ParseException,IOException	{
+	public String getResponse(@RequestBody RequestPOJO requestPOJO) throws ParseException,IOException	{
 		String response = "",responseOutput="";
 		Gson gson =null,reqGson=null;
 		String requestBodyFromApiAi="~~~";
 		String requestActionFromApiAi="",responseFromApigee="";
-		JsonArray jsonArray=null;
 		try {
-			requestBodyFromApiAi=getBody(request);
-			requestBodyFromApiAi="{\"id\":\"d579a226-5db7-4d70-a822-38cdf32ec330\",\"timestamp\":\"2017-02-28T09:46:32.779Z\",\"lang\":\"en\",\"result\":{\"source\":\"agent\",\"resolvedQuery\":\"iOS installation\",\"speech\":\"\",\"action\":\"vzinstallation.install\",\"actionIncomplete\":false,\"parameters\":{},\"contexts\":[],\"metadata\":{\"intentId\":\"0e289ee5-5006-4624-9a36-1aa0e7126eaa\",\"webhookUsed\":\"true\",\"webhookForSlotFillingUsed\":\"false\",\"intentName\":\"VzInstallation\"},\"fulfillment\":{\"speech\":\"installation\",\"messages\":[{\"type\":0,\"speech\":\"installation\"}]},\"score\":0.9},\"status\":{\"code\":200,\"errorType\":\"success\"},\"sessionId\":\"171b1f54-a14b-4cc7-9747-67001046902f\",\"originalRequest\":null}";
+			//requestBodyFromApiAi=getBody(request);
+			requestBodyFromApiAi=requestPOJO.getResult().getAction();
+			System.out.println("^^^^^^^^^^requestBodyFromApiAi"+requestBodyFromApiAi+"^^^^^^^^^^^^");
+			//JsonParser parser = new JsonParser(); 
+			//JsonObject json = (JsonObject) parser.parse(requestBodyFromApiAi);
+			/*requestBodyFromApiAi="{\"id\":\"d579a226-5db7-4d70-a822-38cdf32ec330\",\"timestamp\":\"2017-02-28T09:46:32.779Z\",\"lang\":\"en\",\"result\":{\"source\":\"agent\",\"resolvedQuery\":\"iOS installation\",\"speech\":\"\",\"action\":\"vzinstallation.install\",\"actionIncomplete\":false,\"parameters\":{},\"contexts\":[],\"metadata\":{\"intentId\":\"0e289ee5-5006-4624-9a36-1aa0e7126eaa\",\"webhookUsed\":\"true\",\"webhookForSlotFillingUsed\":\"false\",\"intentName\":\"VzInstallation\"},\"fulfillment\":{\"speech\":\"installation\",\"messages\":[{\"type\":0,\"speech\":\"installation\"}]},\"score\":0.9},\"status\":{\"code\":200,\"errorType\":\"success\"},\"sessionId\":\"171b1f54-a14b-4cc7-9747-67001046902f\",\"originalRequest\":null}";
 			System.out.println("^^^^^^^^^^requestBodyFromApiAi"+requestBodyFromApiAi+"^^^^^^^^^^^^");
 			reqGson= new Gson();
 			JsonParser parser = new JsonParser(); 
 			JsonObject json = (JsonObject) parser.parse(requestBodyFromApiAi);
 			json = (JsonObject) parser.parse(""+json.get("result"));
-			requestActionFromApiAi=""+json.get("action");
-			System.out.println("^^^^^^^^^^requestActionFromApiAi"+requestActionFromApiAi+"^^^^^^^^^^^^");
+			requestActionFromApiAi=""+json.get("action");*/
+			System.out.println("^^^^^^^^^^requestActionFromApiAi"+requestBodyFromApiAi+"^^^^^^^^^^^^");
 			
 			
 			  System.setProperty("java.net.useSystemProxies", "true"); 
-				URL url = new URL("https://apibaas-trial.apigee.net/ramorg/testapp/vzinstallation.installs");//+requestActionFromApiAi+"s");//+requestActionFromApiAi);
+				URL url = new URL("https://apibaas-trial.apigee.net/ramorg/testapp/"+requestBodyFromApiAi);//+requestActionFromApiAi+"s");//+requestActionFromApiAi);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("GET");
 				conn.setRequestProperty("Accept", "application/json");
@@ -74,8 +78,10 @@ public class chatController {
 					//return  output;
 				}
 				System.out.println("^^^^^^^^^^response From Apigee"+response+"^^^^^^^^^^^^");
+				JsonParser parser = new JsonParser();
+				JsonObject json = new JsonObject();
 				json = (JsonObject) parser.parse(""+response);
-				 jsonArray=(JsonArray) json.get("entities");
+				 JsonArray jsonArray = (JsonArray) json.get("entities");
 				//responseFromApigee=""+json.get("entities");
 					json = (JsonObject) parser.parse(""+jsonArray.get(0));
 					responseFromApigee=""+json.get("desc");
@@ -83,7 +89,7 @@ public class chatController {
 				
 				
 				chatInformation ci = new chatInformation();
-				ci.setData(responseFromApigee);
+				ci.setData((JsonObject) json.get("desc"));
 				ci.setSpeech("speech from vz api");
 				ci.setDisplayText("displayText from vz api");
 				ci.setSource("source from vz api");
@@ -143,7 +149,7 @@ public class chatController {
 //vzcustomerservice.contact
 //vzoffer.offers
 //vzinstallation.install
-//{"id":"d579a226-5db7-4d70-a822-38cdf32ec330","timestamp":"2017-02-28T09:46:32.779Z","lang":"en","result":{"source":"agent","resolvedQuery":"iOS installation","speech":"","action":"vzinstallation.install","actionIncomplete":false,"parameters":{},"contexts":[],"metadata":{"intentId":"0e289ee5-5006-4624-9a36-1aa0e7126eaa","webhookUsed":"true","webhookForSlotFillingUsed":"false","intentName":"VzInstallation"},"fulfillment":{"speech":"installation","messages":[{"type":0,"speech":"installation"}]},"score":0.9},"status":{"code":200,"errorType":"success"},"sessionId":"171b1f54-a14b-4cc7-9747-67001046902f","originalRequest":null}
+//"{"id":"d579a226-5db7-4d70-a822-38cdf32ec330","timestamp":"2017-02-28T09:46:32.779Z","lang":"en","result":{"source":"agent","resolvedQuery":"iOS installation","speech":"","action":"vzinstallation.install","actionIncomplete":false,"parameters":{},"contexts":[],"metadata":{"intentId":"0e289ee5-5006-4624-9a36-1aa0e7126eaa","webhookUsed":"true","webhookForSlotFillingUsed":"false","intentName":"VzInstallation"},"fulfillment":{"speech":"installation","messages":[{"type":0,"speech":"installation"}]},"score":0.9},"status":{"code":200,"errorType":"success"},"sessionId":"171b1f54-a14b-4cc7-9747-67001046902f","originalRequest":null}"
 		/*
 		 * {
   "lang": "en", 

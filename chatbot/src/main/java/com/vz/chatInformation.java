@@ -1,10 +1,12 @@
 package com.vz;
 
+import com.google.gson.JsonObject;
+
 public class chatInformation {
 
 	String speech;
 	String displayText;
-	String data;
+	JsonObject data;
 	String source;
 	public String getSpeech() {
 		return speech;
@@ -18,10 +20,10 @@ public class chatInformation {
 	public void setDisplayText(String displayText) {
 		this.displayText = displayText;
 	}
-	public String getData() {
+	public JsonObject getData() {
 		return data;
 	}
-	public void setData(String data) {
+	public void setData(JsonObject data) {
 		this.data = data;
 	}
 	public String getSource() {
